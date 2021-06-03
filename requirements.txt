@@ -1,0 +1,5 @@
+Django==3.2
+psycopg2
+ipython
+docutils
+django-environ
