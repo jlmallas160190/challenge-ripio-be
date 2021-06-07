@@ -11,7 +11,7 @@ class Coin(models.Model):
 
 
 class Account (models.Model):
-    user = models.OneToOneField(User)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
 
 
 class Wallet (models.Model):
