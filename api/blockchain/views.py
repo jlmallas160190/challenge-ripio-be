@@ -1,8 +1,6 @@
 from api.blockchain.serializers import CoinSerializer
-from django.contrib.auth.models import User, Group
-from rest_framework import viewsets
 from app.blockchain.models import Coin
-from rest_framework import permissions
+from rest_framework import permissions, viewsets
 
 class CoinViewSet(viewsets.ModelViewSet):
     """
