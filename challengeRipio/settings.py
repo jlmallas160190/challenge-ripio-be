@@ -59,7 +59,14 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'challengeRipio.urls'
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 10
+    'PAGE_SIZE': 10,
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication'
+    ],
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+
 }
 TEMPLATES = [
     {
@@ -84,7 +91,7 @@ WSGI_APPLICATION = 'challengeRipio.wsgi.application'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
 DATABASES = {
-     'default': {
+    'default': {
         "ENGINE": env("SQL_ENGINE"),
         "NAME": env("SQL_NAME"),
         "USER": env("SQL_USER"),

@@ -3,6 +3,7 @@ from rest_framework.validators import UniqueValidator
 from app.blockchain.models import Account
 from rest_framework import serializers
 
+
 class UserRegisterSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(
         validators=[UniqueValidator(queryset=User.objects.all())]
@@ -12,8 +13,10 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         max_length=20,
         validators=[UniqueValidator(queryset=User.objects.all())]
     )
-    password = serializers.CharField(write_only=True,min_length=8, max_length=64)
-    password_confirmation = serializers.CharField(write_only=True,min_length=8, max_length=64)
+    password = serializers.CharField(
+        write_only=True, min_length=8, max_length=64)
+    password_confirmation = serializers.CharField(
+        write_only=True, min_length=8, max_length=64)
 
     first_name = serializers.CharField(min_length=2, max_length=50)
     last_name = serializers.CharField(min_length=2, max_length=100)

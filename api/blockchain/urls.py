@@ -4,6 +4,7 @@ from api.blockchain import views
 
 router = routers.DefaultRouter()
 router.register(r'coins', views.CoinViewSet)
+router.register(r'accounts', views.AccountViewSet)
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.

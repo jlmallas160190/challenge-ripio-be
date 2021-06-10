@@ -11,4 +11,4 @@ class AccountRegisterViewSet(CreateAPIView):
     """
     queryset = Account.objects.all()
     serializer_class = AccountRegisterSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.AllowAny]
