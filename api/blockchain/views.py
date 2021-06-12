@@ -64,9 +64,18 @@ class AccountViewSet(viewsets.ModelViewSet):
             if request.method == 'POST':
                 data = request.data
                 data['sender_id'] = kwargs['wallet_id']
+                wallet = Wallet.objects.get(pk= data['sender_id'])
+                if wallet is None:
+                    return Response(status=status.HTTP_400_BAD_REQUEST)
+                wallet.calculate_balance_by_sender() 
+                wallet.balance = wallet.balance - data['amount']
+                if wallet.balance < 0.0:
+                    return Response(status=status.HTTP_400_BAD_REQUEST)
+                
                 serializer = TransactionSerializer(data=data)
                 if serializer.is_valid():
                     serializer.save()
+                    wallet.save()
                     return Response(serializer.data, status=status.HTTP_201_CREATED)
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except Exception as ex:
