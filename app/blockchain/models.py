@@ -30,9 +30,9 @@ class Wallet (models.Model):
         if total['amount__sum'] is not None:
             self.balance = self.balance - round(total['amount__sum'], 2)
 
-    def calculate_balance_by_recipient(self, recipient):
+    def calculate_balance_by_recipient(self):
         total = Transaction.objects.filter(
-            recipient=recipient).all().aggregate(Sum('amount'))
+            recipient=self.pk).all().aggregate(Sum('amount'))
         if total['amount__sum'] is not None: 
             self.balance = self.balance + round(total['amount__sum'], 2)
 

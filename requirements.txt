@@ -4,3 +4,5 @@ ipython
 docutils
 django-environ
 djangorestframework
+celery
+django-celery-results
