@@ -2,7 +2,7 @@ from app.blockchain.tasks import calculate_balance_task
 import logging
 from rest_framework.authtoken.models import Token
 
-from api.blockchain.serializers import (AccountSerializer, CoinSerializer,
+from api.blockchain.serializers import (CoinSerializer,
                                         TransactionSerializer,
                                         WalletSerializer)
 from app.blockchain.models import Account, Coin, Transaction, Wallet
