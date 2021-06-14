@@ -18,27 +18,34 @@ class Account (models.Model):
 
 
 class Wallet (models.Model):
-    balance = models.DecimalField(max_digits=12, decimal_places=2, default=0.0,  validators=[MinValueValidator(Decimal('0.01'))])
+    balance = models.DecimalField(max_digits=12, decimal_places=2, default=0.0,  validators=[
+                                  MinValueValidator(Decimal('0.01'))])
     account = models.ForeignKey(
         Account, on_delete=models.CASCADE, related_name='wallets')
     coin = models.ForeignKey(
         Coin, on_delete=models.CASCADE, related_name="transactions")
 
-    def calculate_balance_by_sender(self):
+    def __calculate_sent(self):
         total = Transaction.objects.filter(
             sender_id=self.pk).all().aggregate(Sum('amount'))
         if total['amount__sum'] is not None:
-            self.balance = self.balance - round(total['amount__sum'], 2)
+            return round(total['amount__sum'], 2)
+        return Decimal("0.0")
 
-    def calculate_balance_by_recipient(self):
+    def __calculate_received(self):
         total = Transaction.objects.filter(
             recipient=self.pk).all().aggregate(Sum('amount'))
-        if total['amount__sum'] is not None: 
-            self.balance = self.balance + round(total['amount__sum'], 2)
+        if total['amount__sum'] is not None:
+            return round(total['amount__sum'], 2)
+        return Decimal("0.0")
+
+    def calculate_balance(self):
+        self.balance = self.__calculate_received() - self.__calculate_sent()
 
 
 class Transaction (models.Model):
     sender = models.ForeignKey(
         Wallet, on_delete=models.CASCADE, related_name='transactions')
     recipient = models.IntegerField()
-    amount = models.DecimalField(max_digits=12, decimal_places=2, default=0.0, validators=[MinValueValidator(Decimal('0.01'))])
+    amount = models.DecimalField(max_digits=12, decimal_places=2, default=0.0, validators=[
+                                 MinValueValidator(Decimal('0.01'))])

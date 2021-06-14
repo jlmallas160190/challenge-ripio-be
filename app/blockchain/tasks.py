@@ -8,9 +8,10 @@ def add(x, y):
 
 
 @shared_task
-def calculate_balance_recipient(data):
-    wallet = Wallet.objects.get(pk=data['recipient'])
+def calculate_balance_task(pk , wallet_type):
+    wallet = Wallet.objects.get(pk=pk)
     if wallet is not None:
-        wallet.calculate_balance_by_recipient()
+        wallet.calculate_balance()
         wallet.save()
-        return {'wallet_id': wallet.id, 'wallet_balance': wallet.balance}
+        return {wallet_type: wallet.id, 'wallet_balance': wallet.balance}
+    return {'error': 'Error to process the transaction'}

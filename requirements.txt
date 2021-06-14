@@ -6,3 +6,5 @@ django-environ
 djangorestframework
 celery
 django-celery-results
+django-rest-swagger
+gunicorn

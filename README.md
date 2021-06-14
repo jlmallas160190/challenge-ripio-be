@@ -6,7 +6,8 @@ Allows send coins between users.
 - Install postgres>12
 - Install virtualenv
 - Install libs run the sentence `pip3 install -r requirements.txt`.
-- Create database on postgress called `rippio_challenge`.
+- Create database on postgress called `ripio_challenge`.
+- Activate entorno de desarrollo `source venv/bin/activate`
 - Run the sentence `python manage.py migrate`.
 - Create superuser `python manage.py createsuperuser`.
 - Install RabbitMQ.

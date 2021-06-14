@@ -15,8 +15,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from rest_framework_swagger.views import get_swagger_view
 
+schema_view = get_swagger_view(title='Ripio API')
 urlpatterns = [
+    path('api/doc', schema_view),
     path('admin/', admin.site.urls),
     path('api/v1/blockchain/', include('api.blockchain.urls')),
     path('api/v1/auth/', include('api.auth.urls'))

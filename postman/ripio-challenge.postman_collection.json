@@ -6,7 +6,7 @@
 	},
 	"item": [
 		{
-			"name": "authentication",
+			"name": "register user",
 			"event": [
 				{
 					"listen": "test",
@@ -29,7 +29,54 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"username\": \"admin\",\n    \"password\": \"admin\"\n}",
+					"raw": "{\n    \"user\": {\n        \"email\": \"elsa@ripio.com\",\n        \"username\": \"elsa\",\n        \"password\": \"elsa123456\",\n        \"password_confirmation\": \"elsa123456\",\n        \"first_name\": \"elsa\",\n        \"last_name\": \"elsa\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASE_URL}}/api/v1/auth/register/",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"auth",
+						"register",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    if(pm.response.to.have.status(200)){",
+							"        let jsonData = JSON.parse(responseBody);",
+							"        pm.environment.set(\"AUTHTOKEN\", 'Token '+jsonData[\"token\"]);",
+							"    }",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"elsa\",\n    \"password\": \"elsa123456\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -54,9 +101,6 @@
 		},
 		{
 			"name": "find coins",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
 			"request": {
 				"method": "GET",
 				"header": [
@@ -66,15 +110,6 @@
 						"type": "text"
 					}
 				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"username\": \"admin\",\n    \"password\": \"admin\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
 				"url": {
 					"raw": "{{BASE_URL}}/api/v1/blockchain/coins",
 					"host": [
@@ -91,7 +126,80 @@
 			"response": []
 		},
 		{
-			"name": "get wallets by account",
+			"name": "create coin",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{AUTHTOKEN}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Bitcoin\",\n    \"currency\": \"$\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASE_URL}}/api/v1/blockchain/coins/",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"blockchain",
+						"coins",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "update coin",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{AUTHTOKEN}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Dolar\",\n    \"currency\": \"$\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASE_URL}}/api/v1/blockchain/coins/1/",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"blockchain",
+						"coins",
+						"1",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "find wallets by account",
 			"request": {
 				"method": "GET",
 				"header": [
@@ -102,7 +210,7 @@
 					}
 				],
 				"url": {
-					"raw": "{{BASE_URL}}/api/v1/blockchain/accounts/1/wallets/",
+					"raw": "{{BASE_URL}}/api/v1/blockchain/wallets",
 					"host": [
 						"{{BASE_URL}}"
 					],
@@ -110,10 +218,72 @@
 						"api",
 						"v1",
 						"blockchain",
-						"accounts",
-						"1",
+						"wallets"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get transactions by wallet",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{AUTHTOKEN}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{BASE_URL}}/api/v1/blockchain/wallets/7/transactions",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"blockchain",
 						"wallets",
-						""
+						"7",
+						"transactions"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "post transactions by wallet",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{AUTHTOKEN}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"amount\": 10,\n    \"recipient\": 5\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASE_URL}}/api/v1/blockchain/wallets/7/transactions",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"blockchain",
+						"wallets",
+						"7",
+						"transactions"
 					]
 				}
 			},
@@ -132,6 +302,42 @@
 				],
 				"body": {
 					"mode": "raw",
+					"raw": "{\n    \"coin_id\": 1\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASE_URL}}/api/v1/blockchain/wallets/",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"blockchain",
+						"wallets",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "update wallet by account",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{AUTHTOKEN}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
 					"raw": "{\n    \"coin_id\": 2\n}",
 					"options": {
 						"raw": {
@@ -140,7 +346,7 @@
 					}
 				},
 				"url": {
-					"raw": "{{BASE_URL}}/api/v1/blockchain/accounts/1/wallets/",
+					"raw": "{{BASE_URL}}/api/v1/blockchain/wallets/8/",
 					"host": [
 						"{{BASE_URL}}"
 					],
@@ -148,9 +354,8 @@
 						"api",
 						"v1",
 						"blockchain",
-						"accounts",
-						"1",
 						"wallets",
+						"8",
 						""
 					]
 				}
