@@ -1,3 +1,4 @@
+from decimal import Decimal
 from app.blockchain.tasks import calculate_balance_task
 import logging
 from rest_framework.authtoken.models import Token
@@ -91,19 +92,13 @@ class WalletViewSet(viewsets.ModelViewSet):
                 serializer = TransactionSerializer(queryset, many=True)
                 return Response(serializer.data)
             if request.method == 'POST':
-                data = request.data
+                data = request.data.copy()
                 data['sender_id'] = pk
                 wallet = Wallet.objects.get(pk=pk)
-                if wallet is None:
-                    return Response({
-                        'message': 'The wallet with id %s not exists'.format(data['sender_id']),
-                        'status': status.HTTP_400_BAD_REQUEST,
-                    }, status=status.HTTP_400_BAD_REQUEST)
-
                 wallet.calculate_balance()
-                if wallet.balance < data['amount']:
+                if request.user.is_superuser is False and wallet.balance < Decimal(data['amount']):
                     return Response({
-                        'message': 'You have not money in your wallet for this transaction.',
+                        'message': 'You have not money in your wallet for this transaction, your balance is {}'.format(wallet.balance),
                         'status': status.HTTP_400_BAD_REQUEST,
                     }, status=status.HTTP_400_BAD_REQUEST)
                 serializer = TransactionSerializer(data=data)
@@ -111,11 +106,12 @@ class WalletViewSet(viewsets.ModelViewSet):
                     serializer.save()
                     calculate_balance_task.delay(
                         data['recipient'], 'recipient')
-                    calculate_balance_task.delay(
-                        data['sender_id'], 'sender_id')
+                    if (request.user.is_superuser is False):
+                        calculate_balance_task.delay(
+                            data['sender_id'], 'sender_id')
                     return Response(serializer.data, status=status.HTTP_201_CREATED)
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except Exception as ex:
             logging.error(ex)
-            return Response({'status': status.HTTP_400_BAD_REQUEST,
-                             'message': 'Error en los datos'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response({'status': status.HTTP_500_INTERNAL_SERVER_ERROR,
+                             'message': str(ex)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
